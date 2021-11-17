@@ -22,51 +22,30 @@ let baseMaps = {
     "Satellite": satelliteStreets
   };
 
-// Create the map object with center, zoom level and default layer.
-let map = L.map('mapid', {
-  center: [39.5, -98.5],
-  zoom: 3,
-  layers: [streets]
-});
+  // Create the earthquake layer for our map.
+let earthquakes = new L.layerGroup();
 
-// Pass our map into our layer control and add the layer control to the map.
-L.control.layers(baseMaps).addTo(map);
+// We define an object that contains the overlays.
+// This overlay will be visible all the time.
+let overlays = {
+  Earthquakes: earthquakes
+};
 
-// This function returns the style data for each of the earthquakes we plot on
-// the map. We pass the magnitude of the earthquake into two separate functions
-// to calculate the color and radius.
-function styleInfo(feature) {
-  return {
-    opacity: 1,
-    fillOpacity: 1,
-    fillColor: getColor(feature.properties.mag),
-    color: "#000000",
-    radius: getRadius(feature.properties.mag),
-    stroke: true,
-    weight: 0.5
-  };
-}
+// Then we add a control to the map that will allow the user to change
+// which layers are visible.
+L.control.layers(baseMaps, overlays).addTo(map);
 
-// This function determines the color of the circle based on the magnitude of the earthquake.
-function getColor(magnitude) {
-  if (magnitude > 5) {
-    return "#ea2c2c";
-  }
-  if (magnitude > 4) {
-    return "#ea822c";
-  }
-  if (magnitude > 3) {
-    return "#ee9c00";
-  }
-  if (magnitude > 2) {
-    return "#eecc00";
-  }
-  if (magnitude > 1) {
-    return "#d4ee00";
-  }
-  return "#98ee00";
-}
-// Retrieve the earthquake GeoJSON data.
+// // Create the map object with center, zoom level and default layer.
+// let map = L.map('mapid', {
+//   center: [39.5, -98.5],
+//   zoom: 3,
+//   layers: [streets]
+// });
+
+// // Pass our map into our layer control and add the layer control to the map.
+// L.control.layers(baseMaps).addTo(map);
+
+// // Retrieve the earthquake GeoJSON data.
 d3.json("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson").then(function(data) {
   
 // Creating a GeoJSON layer with the retrieved data.
@@ -83,4 +62,8 @@ style: styleInfo,
   onEachFeature: function(feature, layer) {
   layer.bindPopup("Magnitude: " + feature.properties.mag + "<br>Location: " + feature.properties.place);
 }
-}).addTo(map);
+}).addTo(earthquakes);
+
+// Then we add the earthquake layer to our map.
+
+});
